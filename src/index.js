@@ -6,7 +6,8 @@ const authRoutes = require('./routes/authRoutes');
 const bookRoutes = require('./routes/bookRoutes');
 const bodyParser = require('body-parser');
 const requireAuth = require('./middlewares/requireAuth');
-
+const http = require('http')
+const fs = require('fs')
 const app = express();
 
 app.use(bodyParser.json());
@@ -26,6 +27,9 @@ app.get('/', requireAuth, (req, res) => {
     res.send(`Your email: ${req.user.email}`);
 });
 
+app.get('/', function (req, res) {
+    res.sendFile('index.html');
+});
 app.listen(3000, () => {
     console.log('Listening on port 3000');
 })

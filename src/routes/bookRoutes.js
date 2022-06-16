@@ -33,7 +33,7 @@ const upload = multer({
 router.post('/book', upload.single('image'), async (req, res) => {
     const { title, author, description, price, quantity, category, image = req.file.path } = req.body;
 
-    if (!title || !author || !description || !price || !category || !image) {
+    if (!title || !author || !description || !price || !image) {
         return res.status(422).send({ error: 'You must provide the name, author and image of the book' });
     }
     try {
@@ -42,7 +42,7 @@ router.post('/book', upload.single('image'), async (req, res) => {
             data: fs.readFileSync(req.file.path).toString('base64'),
             contentType: "image/jpg",
         }
-        const book = new Book({ title, author, description, price, quantity, category, image });
+        const book = new Book({ title, author, description, price, category, quantity, image });
         await book.save();
         res.send(book);
     } catch (err) {
