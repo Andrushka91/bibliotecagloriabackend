@@ -1,9 +1,9 @@
 const express = require('express');
+const mongoose = require('mongoose');
 const req = require('express/lib/request');
 const fs = require("fs");
-const mongoose = require('mongoose');
-const requireAuth = require('../middlewares/requireAuth')
 const Book = mongoose.model('Book');
+const requireAuth = require('../middlewares/requireAuth');
 const router = express.Router();
 router.use(requireAuth);
 
@@ -59,10 +59,42 @@ router.get("/search", async (req, res) => {
         })
 })
 
-router.get('/books', async (req, res, next) => {
+router.get('/booksm', async (req, res, next) => {
     const books = await Book.find();
     res.send(books);
 });
+
+
+
+router.get('/books', (req, res) => {
+    try {
+        const options = {
+            page: parseInt(req.query.page),
+            limit: parseInt(req.query.itemsPerPage),
+            collation: {
+                locale: 'en',
+            },
+        };
+        Book.paginate({}, options, function (err, result) {
+            // result.docs
+            // result.totalDocs = 100
+            // result.limit = 10
+            // result.page = 1
+            // result.totalPages = 10
+            console.log("test2:", result)
+            // result.hasNextPage = true
+            // result.nextPage = 2
+            // result.hasPrevPage = false
+            // result.prevPage = null
+            // result.pagingCounter = 1
+            res.send({ items: result.docs, totalItems: result.totalDocs })
+        });
+
+    } catch (err) {
+        return res.status(500).json(err);
+    }
+})
+
 
 
 router.get("/book/:bookId", (req, res, next) => {

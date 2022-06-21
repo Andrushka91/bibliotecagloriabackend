@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const bookSchema = new mongoose.Schema({
     title: {
@@ -29,5 +29,5 @@ const bookSchema = new mongoose.Schema({
         contentType: String
     }
 })
- 
+bookSchema.plugin(mongoosePaginate);
 mongoose.model('Book', bookSchema);
