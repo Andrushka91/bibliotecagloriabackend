@@ -1,48 +1,21 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const req = require('express/lib/request');
-const fs = require("fs");
 const Book = mongoose.model('Book');
 const requireAuth = require('../middlewares/requireAuth');
 const router = express.Router();
 router.use(requireAuth);
 
-const multer = require('multer');
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'uploads');
-    },
-    filename: function (req, file, cb) {
-        cb(null, new Date().getTime().toString() + '-' + file.originalname);
-    }
-});
 
-const fileFilter = (req, file, cb) => {
-    if (file.mimetype === 'image/jpeg' || file.mimetype === 'image/png') {
-        cb(null, true);
-    } else {
-        cb(null, false);
-    }
-};
-const upload = multer({
-    storage: storage,
-    fileFilter: fileFilter
-});
-
-
-router.post('/book', upload.single('image'), async (req, res) => {
-    const { title, author, description, price, quantity, category, image = req.file.path } = req.body;
+router.post('/book', async (req, res) => {
+    const { title, author, description, price, quantity, category, image } = req.body;
 
     if (!title || !author || !description || !price || !image) {
         return res.status(422).send({ error: 'You must provide the name, author and image of the book' });
     }
     try {
-        const image = {
-            name: req.body.name,
-            data: fs.readFileSync(req.file.path).toString('base64'),
-            contentType: "image/jpg",
-        }
-        const book = new Book({ title, author, description, price, category, quantity, image });
+        const cartQuantity = 1;
+        const book = new Book({ title, author, description, price, category, quantity, cartQuantity, image });
         await book.save();
         res.send(book);
     } catch (err) {
@@ -52,10 +25,10 @@ router.post('/book', upload.single('image'), async (req, res) => {
 
 router.get("/search", async (req, res) => {
     const searchedField = req.query.title;
-    console.log("SEARCH->TEST:", searchedField)
     await Book.find({ title: { $regex: searchedField, $options: '$i' } })
         .then(data => {
-            res.send(data);
+            res.send({ items: data, totalItems: data.length })
+            // res.send(data);
         })
 })
 
@@ -81,7 +54,6 @@ router.get('/books', (req, res) => {
             // result.limit = 10
             // result.page = 1
             // result.totalPages = 10
-            console.log("test2:", result)
             // result.hasNextPage = true
             // result.nextPage = 2
             // result.hasPrevPage = false
@@ -103,7 +75,6 @@ router.get("/book/:bookId", (req, res, next) => {
         .select('title author image _id')
         .exec()
         .then(doc => {
-            console.log("From database", doc);
             if (doc) {
                 res.status(200).json({
                     book: doc,

@@ -8,7 +8,6 @@ router.use(requireAuth);
 
 router.post('/order', async (req, res) => {
     const { orderId, userName, userEmail, cartItems, totalPrice } = req.body;
-    console.log("req.body:", req.body)
     if (!orderId || !userName || !userEmail || !cartItems || !totalPrice) {
         return res.status(422).send({ error: 'You must provide items in the cart to create the order' })
     }
@@ -35,6 +34,11 @@ router.post('/order', async (req, res) => {
         res.status(422).send({ error: err.message });
     }
 })
+
+router.get('/orders', async (req, res, next) => {
+    const orders = await Order.find();
+    res.send(orders);
+});
 
 
 module.exports = router;
