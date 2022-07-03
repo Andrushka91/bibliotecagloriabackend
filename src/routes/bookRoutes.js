@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const req = require('express/lib/request');
 const Book = mongoose.model('Book');
 const requireAuth = require('../middlewares/requireAuth');
+const ObjectId = require('mongodb').ObjectID;
 const router = express.Router();
 router.use(requireAuth);
 
@@ -23,10 +24,23 @@ router.post('/book', async (req, res) => {
     }
 });
 
+router.delete('/book', (req, res) => {
+    const id = req.body.id;
+    Book.findByIdAndRemove(id, (error, deletedItem) => {
+        if (error) {
+            res.status(404).send(err.message);
+        } else {
+            res.send("Cartea " + deletedItem.title + " a fost eliminată cu success.");
+        }
+    })
+})
+
 router.get("/search", async (req, res) => {
     const searchedField = req.query.title;
+    console.log(searchedField)
     await Book.find({ title: { $regex: searchedField, $options: '$i' } })
         .then(data => {
+            console.log("data:", data)
             res.send({ items: data, totalItems: data.length })
             // res.send(data);
         })
