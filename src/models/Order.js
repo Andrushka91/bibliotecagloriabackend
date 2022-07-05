@@ -17,10 +17,14 @@ const orderSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    status: {
+        type: String,
+        required: true
+    },
     books: {
         type: Array,
         required: true
     }
 });
 
-mongoose.model('Order',orderSchema);
+mongoose.model('Order', orderSchema);

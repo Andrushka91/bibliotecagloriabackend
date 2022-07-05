@@ -17,17 +17,27 @@ router.post('/order', async (req, res) => {
             booksIds.push(item.id)
         })
 
+        cartItems.forEach(cartItem => {
+            console.log(cartItem)
+            Book.findByIdAndUpdate(cartItem.id, { $inc: { 'quantity': -cartItem.cartQuantity } }, (err, result) => {
+                if (err) {
+                    res.status(422).send({ error: err.message });
+                }
+            })
+        })
+
         const books = await Book.find({ _id: { $in: booksIds } }).then((data) => {
             data.forEach((item) => {
                 cartItems.forEach((itemCart) => {
                     if (itemCart.id == item._id) {
-                        item.quantity = itemCart.quantity;
+                        item.cartQuantity = itemCart.cartQuantity;
                     }
                 })
             })
             return data;
         })
-        const order = new Order({ orderId, userName, userEmail, totalPrice, books });
+        const status = 'pending'; // pending, canceled, complete.
+        const order = new Order({ orderId, userName, userEmail, totalPrice, status, books });
         await order.save();
         res.send(order);
     } catch (err) {
