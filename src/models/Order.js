@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const orderSchema = new mongoose.Schema({
     orderId: {
@@ -26,5 +27,5 @@ const orderSchema = new mongoose.Schema({
         required: true
     }
 });
-
+orderSchema.plugin(mongoosePaginate);
 mongoose.model('Order', orderSchema);

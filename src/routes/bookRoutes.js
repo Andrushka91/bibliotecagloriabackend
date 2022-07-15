@@ -3,7 +3,6 @@ const mongoose = require('mongoose');
 const req = require('express/lib/request');
 const Book = mongoose.model('Book');
 const requireAuth = require('../middlewares/requireAuth');
-const ObjectId = require('mongodb').ObjectID;
 const router = express.Router();
 router.use(requireAuth);
 
@@ -50,8 +49,6 @@ router.get('/booksm', async (req, res, next) => {
     const books = await Book.find();
     res.send(books);
 });
-
-
 
 router.get('/books', (req, res) => {
     try {
