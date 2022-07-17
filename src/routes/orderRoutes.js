@@ -67,6 +67,15 @@ router.get('/orders', (req, res) => {
     }
 })
 
+router.get('/searchOrder', async (req, res) => {
+    const orderId = req.query.orderId;
+    await await Order.find({ orderId: { $regex: orderId, $options: '$i' } }).
+        then(data => {
+            console.log("dataSearched:", data);
+            res.status(200).send({ items: data, totalItems: 1 });
+        })
+})
+
 router.post('/cancelOrder', async (req, res) => {
     try {
         const id = req.body.orderId;
