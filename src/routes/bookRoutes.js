@@ -24,7 +24,7 @@ router.post('/book', async (req, res) => {
 });
 
 router.delete('/book', (req, res) => {
-    const id = req.body.id;
+    const id = req.body.bookId;
     Book.findByIdAndRemove(id, (error, deletedItem) => {
         if (error) {
             res.status(404).send(err.message);
@@ -32,6 +32,23 @@ router.delete('/book', (req, res) => {
             res.send("Cartea " + deletedItem.title + " a fost eliminată cu success.");
         }
     })
+})
+
+router.patch('/book', (req, res) => {
+    const { bookId, image, title, author, description, price, quantity, category } = req.body;
+
+    console.log("req.body:", bookId)
+    try {
+        Book.findByIdAndUpdate(bookId, { title, author, description, price, quantity, category, image }, (error, deletedItem) => {
+            if (error) {
+                res.status(404).send(err.message);
+            } else {
+                res.send("Cartea " + deletedItem.title + " a fost actualizată cu success.");
+            }
+        })
+    } catch (error) {
+        console.log("Error:", error.message)
+    }
 })
 
 router.get("/search", async (req, res) => {
