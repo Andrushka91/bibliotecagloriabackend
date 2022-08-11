@@ -36,8 +36,6 @@ router.delete('/book', (req, res) => {
 
 router.patch('/book', (req, res) => {
     const { bookId, image, title, author, description, price, quantity, category } = req.body;
-
-    console.log("req.body:", bookId)
     try {
         Book.findByIdAndUpdate(bookId, { title, author, description, price, quantity, category, image }, (error, deletedItem) => {
             if (error) {

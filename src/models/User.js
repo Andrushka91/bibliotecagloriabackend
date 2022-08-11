@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const mongoosePaginate = require('mongoose-paginate-v2');
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -9,6 +10,10 @@ const userSchema = new mongoose.Schema({
     email: {
         type: String,
         unique: true,
+        required: true
+    },
+    userType: {
+        type: String,
         required: true
     },
     password: {
@@ -51,5 +56,5 @@ userSchema.methods.comparePassword = function (candidatePassword) {
         });
     });
 }
-
+userSchema.plugin(mongoosePaginate);
 mongoose.model('User', userSchema);

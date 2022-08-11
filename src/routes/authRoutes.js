@@ -6,12 +6,11 @@ const User = mongoose.model('User');
 const router = express.Router();
 
 router.post('/signup', async (req, res) => {
-    const { name, email, password } = req.body;
-
+    const { name, email, userType, password } = req.body;
+    console.log("signup:", req.body)
     try {
-        const user = new User({ name, email, password });
+        const user = new User({ name, email, userType, password });
         await user.save();
-
         const token = jwt.sign({ userId: user._id }, 'KEYL');
         res.send({ token });
     } catch (err) {
@@ -38,6 +37,7 @@ router.post('/signin', async (req, res) => {
         return res.status(422).send({ error: 'Invalid password or email' })
     }
 })
+
 router.get('/getUser', async (req, res) => {
     var token = req.headers['token'];
     if (!token) return res.status(401).send({ auth: false, message: 'No token provided.' });
@@ -47,11 +47,29 @@ router.get('/getUser', async (req, res) => {
         User.findById(decoded.userId, function (err, user) {
             if (err) return res.status(500).send("There was a problem finding the user.");
             if (!user) return res.status(404).send("No user found.");
-            const userObj = {name:user.name,email:user.email}
+            const userObj = { name: user.name, email: user.email }
             res.status(200).send(userObj);
         });
     });
 
 });
+
+router.get('/users', (req, res) => {
+
+    try {
+        const options = {
+            page: parseInt(req.query.page),
+            limit: parseInt(req.query.itemsPerPage),
+            collation: {
+                locale: 'en'
+            },
+        };
+        User.paginate({}, options, function (err, result) {
+            res.send({ items: result.docs, totalItems: result.totalDocs })
+        });
+    } catch (err) {
+        return res.status(500).json(err);
+    }
+})
 
 module.exports = router;
