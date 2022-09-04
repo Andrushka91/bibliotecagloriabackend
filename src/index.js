@@ -4,6 +4,7 @@ require('./models/Order');
 const express = require('express');
 const mongoose = require('mongoose');
 const authRoutes = require('./routes/authRoutes');
+const userRoutes = require('./routes/userRoutes');
 const bookRoutes = require('./routes/bookRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 const requireAuth = require('./middlewares/requireAuth');
@@ -15,6 +16,7 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json({ limit: "5mb", extended: true }));
 app.use(authRoutes);
+app.use(userRoutes);
 app.use(bookRoutes);
 app.use(orderRoutes);
 

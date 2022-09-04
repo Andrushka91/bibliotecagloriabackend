@@ -54,22 +54,4 @@ router.get('/getUser', async (req, res) => {
 
 });
 
-router.get('/users', (req, res) => {
-
-    try {
-        const options = {
-            page: parseInt(req.query.page),
-            limit: parseInt(req.query.itemsPerPage),
-            collation: {
-                locale: 'en'
-            },
-        };
-        User.paginate({}, options, function (err, result) {
-            res.send({ items: result.docs, totalItems: result.totalDocs })
-        });
-    } catch (err) {
-        return res.status(500).json(err);
-    }
-})
-
 module.exports = router;
